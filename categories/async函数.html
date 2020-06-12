@@ -28,7 +28,7 @@
 <meta property="og:description" content="async函数含义ES2017 标准引入了 *async *函数，使得异步操作变得更加方便 async 函数是什么?    它就是Generator函数语法糖 async函数对 Generator 函数的改进，体现在以下四点。  内置执行器 更好的语义 更广的适用性 返回值是Promise  基本用法async函数返回一个 Promise 对象，可以使用then方法添加回调函数。当函数执行的时候，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-06-12T02:40:57.000Z">
-<meta property="article:modified_time" content="2020-06-12T06:08:13.949Z">
+<meta property="article:modified_time" content="2020-06-12T06:09:50.123Z">
 <meta property="article:author" content="浅陌初心">
 <meta name="twitter:card" content="summary">
 
@@ -189,15 +189,65 @@
       
       
       <div class="post-body">
-          <div class="category-all-page">
-            <div class="category-all-title">
-              目前共计 1 个分类
-            </div>
-            <div class="category-all">
-              <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%A8%A1%E5%9D%97%E5%8C%96/">模块化</a><span class="category-list-count">1</span></li></ul>
-            </div>
-          </div>
-        
+          <h1 id="async函数"><a href="#async函数" class="headerlink" title="async函数"></a>async函数</h1><h2 id="含义"><a href="#含义" class="headerlink" title="含义"></a><a href="[https://es6.ruanyifeng.com/#docs/async#%E5%90%AB%E4%B9%89](https://es6.ruanyifeng.com/#docs/async#含义)">含义</a></h2><p><strong>ES2017</strong> 标准引入了 *<em>async *</em>函数，使得异步操作变得更加方便</p>
+<p><code>async</code> 函数是什么?    它就是<code>Generator</code>函数语法糖</p>
+<p><code>async</code>函数对 Generator 函数的改进，体现在以下四点。</p>
+<ul>
+<li>内置执行器</li>
+<li>更好的语义</li>
+<li>更广的适用性</li>
+<li>返回值是Promise</li>
+</ul>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p><code>async</code>函数返回一个 Promise 对象，可以使用<code>then</code>方法添加回调函数。当函数执行的时候，一旦遇到<code>await</code>就会先返回，等到异步操作完成，再接着执行函数体内后面的语句。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><p><code>async</code>函数返回一个<code>Promise</code>对象。</p>
+<p><code>async</code>函数内部<code>return</code>语句返回值，会成为<code>then</code>方法回调函数的参数</p>
+<p><code>async</code>函数内部抛出错误，会导致返回的 Promise 对象变为<code>reject</code>状态。抛出的错误对象会被<code>catch</code>方法回调函数接收到。</p>
+<h3 id="Promise对象的状态变化"><a href="#Promise对象的状态变化" class="headerlink" title="Promise对象的状态变化"></a>Promise对象的状态变化</h3><p><code>async</code>函数返回的 Promise 对象，必须等到内部所有<code>await</code>命令后面的 Promise 对象执行完，才会发生状态改变，除非遇到<code>return</code>语句或者抛出错误。也就是说，只有<code>async</code>函数内部的异步操作执行完，才会执行<code>then</code>方法指定的回调函数。</p>
+<h3 id="await命令"><a href="#await命令" class="headerlink" title="await命令"></a>await命令</h3><p><code>await</code>命令后面是一个<code>Promise</code>对象，返回该对象的结果。如果不是Promise对象，就直接返回对应的值。</p>
+<p>另一种情况是，<code>await</code>命令后面是一个<code>thenable</code>对象(即定义<code>then</code>方法对象)，那么<code>await</code>会将其等同于<code>Promise</code>对象</p>
+<p>实现休眠效果</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sleep</span>(<span class="params">interval</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(resolve, interval);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用法</span></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">one2FiveInAsync</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(i);</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">await</span> sleep(<span class="number">3000</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(result)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">one2FiveInAsync();</span><br></pre></td></tr></table></figure>
+
+<p><code>await</code>命令后面的 Promise 对象如果变为<code>reject</code>状态，则<code>reject</code>的参数会被<code>catch</code>方法的回调函数接收到。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">await</span> <span class="built_in">Promise</span>.reject(<span class="string">'出错了'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f()</span><br><span class="line">.then(<span class="function"><span class="params">v</span> =&gt;</span> <span class="built_in">console</span>.log(v))</span><br><span class="line">.catch(<span class="function"><span class="params">e</span> =&gt;</span> <span class="built_in">console</span>.log(e))</span><br><span class="line"><span class="comment">// 出错了</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>注意点</strong>：上面代码中，<code>await</code>语句前面没有<code>return</code>，但是<code>reject</code>方法的参数依然传入了<code>catch</code>方法回调函数。这里如果在<code>await</code>前面加上<code>return</code>，效果是一样的。</p>
+<p>任何一个<code>await</code>语句后面的 Promise 对象变为<code>reject</code>状态，那么整个<code>async</code>函数都会中断执行。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">await</span> <span class="built_in">Promise</span>.reject(<span class="string">'出错了'</span>)</span><br><span class="line">    <span class="keyword">await</span> <span class="built_in">Promise</span>.resolve(<span class="string">'hello World'</span>) <span class="comment">// 不会执行</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>有时，我们希望即使前一个异步操作失败，也不要中断后面的异步操作。这时可以将第一个<code>await</code>放在在<code>try...catch</code>结构里面，这样不管这个异步操作是否成功，第二个<code>await</code>都会执行。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">await</span> <span class="built_in">Promise</span>.reject(<span class="string">'出错了'</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span>(e) &#123;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> <span class="built_in">Promise</span>.resolve(<span class="string">'hello world'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f()</span><br><span class="line">.then(<span class="function"><span class="params">v</span> =&gt;</span> <span class="built_in">console</span>.log(v))</span><br><span class="line"><span class="comment">// hello world</span></span><br></pre></td></tr></table></figure>
+
+<p>另一种方法是<code>await</code>后面的Promise对象再跟一个<code>catch</code>方法，处理前面可能出现的错误</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">await</span> <span class="built_in">Promise</span>.reject(<span class="string">'出错了'</span>)</span><br><span class="line">    .catch(<span class="function"><span class="params">e</span> =&gt;</span> <span class="built_in">console</span>.log(e));</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">await</span> <span class="built_in">Promise</span>.resolve(<span class="string">'hello world'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f().then(<span class="function"><span class="params">v</span> =&gt;</span> <span class="built_in">console</span>.log(v))</span><br><span class="line"><span class="comment">// 出错了</span></span><br><span class="line"><span class="comment">// hello world</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>如果<code>await</code>后面的异步操作出错，那么等同于<code>async</code>函数返回的 Promise 对象被<code>reject</code>。</p>
+<h3 id="使用注意点"><a href="#使用注意点" class="headerlink" title="使用注意点"></a>使用注意点</h3><ul>
+<li><p><code>await</code>命令后面的<code>Promise</code>对象，运行结果可能是<code>rejected</code>，所以最好把<code>await</code>命令放在<code>try...catch</code>代码块中。</p>
+</li>
+<li><p>多个<code>await</code>命令后面的异步操作，如果不存在继发关系，最好让它们同时触发。</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 写法一</span></span><br><span class="line"><span class="keyword">let</span> [foo, bar] = <span class="keyword">await</span> <span class="built_in">Promise</span>.all([getFoo(), getBar()]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写法二</span></span><br><span class="line"><span class="keyword">let</span> fooPromise = getFoo();</span><br><span class="line"><span class="keyword">let</span> barPromise = getBar();</span><br><span class="line"><span class="keyword">let</span> foo = <span class="keyword">await</span> fooPromise;</span><br><span class="line"><span class="keyword">let</span> bar = <span class="keyword">await</span> barPromise;</span><br><span class="line"><span class="comment">// 同时触发，这样会缩短程序执行时间</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>await</code>命令只能用在<code>async</code>函数之中，如果用在普通函数，就会报错。(待解决)</p>
+</li>
+<li><p>async函数可以保留运行堆栈 （待解决）</p>
+</li>
+</ul>
+<h2 id="async-函数的实现原理"><a href="#async-函数的实现原理" class="headerlink" title="async 函数的实现原理"></a>async 函数的实现原理</h2><p><a href="https://es6.ruanyifeng.com/#docs/async#async-函数的实现原理" target="_blank" rel="noopener">async 函数的实现原理</a></p>
+<h2 id="与其他异步处理方法的比较"><a href="#与其他异步处理方法的比较" class="headerlink" title="与其他异步处理方法的比较"></a>与其他异步处理方法的比较</h2><p><a href="https://es6.ruanyifeng.com/#docs/async#与其他异步处理方法的比较" target="_blank" rel="noopener">与其他异步处理方法的比较</a></p>
+<h2 id="实例：按顺序完成异步操作"><a href="#实例：按顺序完成异步操作" class="headerlink" title="实例：按顺序完成异步操作"></a>实例：按顺序完成异步操作</h2><p><a href="https://es6.ruanyifeng.com/#docs/async#实例：按顺序完成异步操作" target="_blank" rel="noopener">实例：按顺序完成异步操作</a></p>
+<h2 id="顶层await"><a href="#顶层await" class="headerlink" title="顶层await"></a>顶层await</h2><p><a href="https://es6.ruanyifeng.com/#docs/async#顶层-await" target="_blank" rel="noopener">顶层await</a></p>
+<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><ul>
+<li>1.4</li>
+<li>1.5</li>
+<li>1.6</li>
+<li>1.7都不会</li>
+</ul>
+
       </div>
       
       
