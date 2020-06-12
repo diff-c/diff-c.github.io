@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"diff-c.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="模块化一、模块化的理解  什么是模块？    将一个复杂的程序依据一定的规则(规范)封装成几个块(文件)，并进行组合在一起 块的内部数据与实现是私有的，只是向外暴露一些接口(方法)与外部其他模块通信    模块的进化过程    全局function模式：将不同的功能封装成不同的全局命名函数 编码：将不同的功能封装成不同的全局函数 问题：污染全局命名空间，容易引起命名冲突或数据不安全，而且模块成员之">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js&#x2F;模块化">
+<meta property="og:url" content="https://diff-c.github.io/2020/06/12/js/%E6%A8%A1%E5%9D%97%E5%8C%96/index.html">
+<meta property="og:site_name" content="浅陌初心">
+<meta property="og:description" content="模块化一、模块化的理解  什么是模块？    将一个复杂的程序依据一定的规则(规范)封装成几个块(文件)，并进行组合在一起 块的内部数据与实现是私有的，只是向外暴露一些接口(方法)与外部其他模块通信    模块的进化过程    全局function模式：将不同的功能封装成不同的全局命名函数 编码：将不同的功能封装成不同的全局函数 问题：污染全局命名空间，容易引起命名冲突或数据不安全，而且模块成员之">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-12T03:01:32.582Z">
+<meta property="article:modified_time" content="2020-06-12T03:01:32.560Z">
+<meta property="article:author" content="浅陌初心">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://diff-c.github.io/2020/06/12/js/%E6%A8%A1%E5%9D%97%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>js/模块化 | 浅陌初心</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>
+<!-- 背景动画 -->
+<!-- <script type="text/javascript" src="/js/particle.js"></script> -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">浅陌初心</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://diff-c.github.io/2020/06/12/js/%E6%A8%A1%E5%9D%97%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="浅陌初心">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="浅陌初心">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          js/模块化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-12 11:01:32" itemprop="dateCreated datePublished" datetime="2020-06-12T11:01:32+08:00">2020-06-12</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h1><h2 id="一、模块化的理解"><a href="#一、模块化的理解" class="headerlink" title="一、模块化的理解"></a>一、模块化的理解</h2><blockquote>
+<ol>
+<li>什么是模块？</li>
+</ol>
+</blockquote>
+<ul>
+<li>将一个复杂的程序依据一定的规则(规范)封装成几个块(文件)，并进行组合在一起</li>
+<li>块的内部数据与实现是私有的，只是向外暴露一些接口(方法)与外部其他模块通信</li>
+</ul>
+<blockquote>
+<ol start="2">
+<li>模块的进化过程</li>
+</ol>
+</blockquote>
+<ul>
+<li>全局function模式：将不同的功能封装成不同的全局命名函数<ul>
+<li>编码：将不同的功能封装成不同的全局函数</li>
+<li>问题：污染全局命名空间，容易引起命名冲突或数据不安全，而且模块成员之间看不出直接关系</li>
+</ul>
+</li>
+<li>namespcae模式：简单对象封装<ul>
+<li>作用：减少了全局变量，解决命名冲突</li>
+<li>问题：数据不安全(外部可以直接修改模块内部的数据)</li>
+</ul>
+</li>
+<li>IIFE模式：匿名函数自调用(闭包)<ul>
+<li>作用：数据是私有的，外部只能通过暴露的方法操作</li>
+<li>编码：将数据和行为封装到一个函数内部，通过给window添加属性向外暴露接口</li>
+<li>问题：如果当前这个模块依赖另外一个模块怎么办？</li>
+</ul>
+</li>
+<li>IIFE模式增强：引入依赖<ul>
+<li>这是现代模块实现的基石</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<ol start="3">
+<li>模块化的好处</li>
+</ol>
+</blockquote>
+<ul>
+<li>避免命名冲突(减少命名空间污染)</li>
+<li>更好的分离，按需加载</li>
+<li>更高复用性</li>
+<li>更高维护性</li>
+</ul>
+<blockquote>
+<ol start="4">
+<li>引入多个<code>&lt;script&gt;</code>后出现的问题</li>
+</ol>
+</blockquote>
+<ul>
+<li>请求过多<ul>
+<li>首先我们要依赖多个模块，那样就会发送多个请求，导致请求过多</li>
+</ul>
+</li>
+<li>依赖模糊<ul>
+<li>不知道具体依赖关系是什么，即很容易因为不了解他们之间的依赖关系导致加载先后顺序出错</li>
+</ul>
+</li>
+<li>难以维护<ul>
+<li>以上两种原因就导致了很难维护，有可能出现牵一发而动全身情况导致项目出现严重问题</li>
+<li>因此通过模块化规范来解决</li>
+</ul>
+</li>
+</ul>
+<h2 id="二、模块化规范"><a href="#二、模块化规范" class="headerlink" title="二、模块化规范"></a>二、模块化规范</h2><blockquote>
+<ol>
+<li>CommonJS</li>
+</ol>
+</blockquote>
+<ul>
+<li><p>概述</p>
+<ul>
+<li>Node应用由模块组成，采用CommonJS模块规范</li>
+<li>每个文件就是一个模块，有自己的作用域</li>
+<li>在文件里面定义的变量、函数、类都是私有的，对其他文件不可见</li>
+<li><strong>在服务端，模块的加载试运行时同步加载的；在浏览器端，模块需要提前编译打包处理</strong></li>
+</ul>
+</li>
+<li><p>特点</p>
+<ul>
+<li>所有代码都运行在模块作用域，不会污染全局作用域</li>
+<li>模块可以多次加载，但是只会在第一次加载时运行一次，然后运行结果就被缓存了，以后再加载，就直接读取缓存结果。要想模块再次运行，必须清除缓存</li>
+<li>模块加载的顺序，按照其在代码中出现的顺序</li>
+</ul>
+</li>
+<li><p>基本语法</p>
+<ul>
+<li>暴露模块：<code>module.exports = value</code>或 <code>exports.xxx = value</code></li>
+<li>引入模块：<code>require(xxx)</code>，如果是第三方模块，xxx为模块名；如果是自定义模块，xxx为模块文件路径</li>
+</ul>
+<p>  <strong>CommonJS暴露的模块是什么？</strong></p>
+<ul>
+<li><p>CommonJS规范规定，每个模块内部module变量代表当前模块。</p>
+</li>
+<li><p>这个变量是一个对象，它的exports属性(即module.exports)是对外的接口</p>
+</li>
+<li><p>加载某个模块，其实就是加载该模块的module.exports属性</p>
+<p>require命令用于加载模块文件。require命令的基本功能是，读入并执行一个JS文件，然后返回该模块的exports对象。如果没有发现指定模块，就会报错</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>模块的加载机制</p>
+<ul>
+<li>CommonJS模块的加载机制是，输入的是被输出的值的拷贝，即一旦输出一个值，模块内部的变化就影响不到这个值。</li>
+</ul>
+</li>
+<li><p>服务端实现</p>
+<ul>
+<li>使用browserify在浏览器端实现</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<ol start="2">
+<li>AMD</li>
+</ol>
+</blockquote>
+<p>CommonJS规范加载模块是同步的，也就是说，只有加载完成，才能执行后面的操作。</p>
+<p>AMD则是非同步加载模块，允许指定回调函数</p>
+<p>Node.js主要用于服务器编程，模块文件一般都已经保存在本地磁盘中，所以加载起来比较快，不用考虑非同步加载的方式，所以CommonJS比较适用。但，如果是浏览器，要从服务器端加载模块，这时就必须采用非同步模式，因此浏览器端一般采用AMD模范。</p>
+<p>此外AMD规范比CommonJS规范在浏览器端实现要来着早</p>
+<ul>
+<li><p>AMD规范基本语法</p>
+<p>  <strong>定义暴露模块：</strong></p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义没有依赖的模块</span></span><br><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> 模块</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 定义有依赖的模块</span></span><br><span class="line">define([<span class="string">'module1'</span>,<span class="string">'module2'</span>],<span class="function"><span class="keyword">function</span>(<span class="params">m1,m2</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> 模块</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>  <strong>引用使用模块：</strong></p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>([<span class="string">'module1'</span>,<span class="string">'module2'</span>],<span class="function"><span class="keyword">function</span>(<span class="params">m1,m2</span>) </span>&#123;</span><br><span class="line">  	使用m1/m2  </span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>  RequireJS是一个工具库，主要用户客户端的模块管理。它的模块管理遵守AMD规范，</p>
+<p>  RequireJS的基本思想是，通过define方法，将代码定义为模块；通过require方法，实现代码的模块加载。</p>
+<p>  <strong>总结：</strong>使用AMD模块定义的方法非常清晰，不会污染全局环境，能够清晰显示依赖关系。AMD模式可以用于浏览器环境，并且允许非同步加载模块，也可以根据需要动态加载模块</p>
+</li>
+</ul>
+<blockquote>
+<ol start="3">
+<li>CMD</li>
+</ol>
+</blockquote>
+<p>CMD规范专门用于浏览器端，模块的加载是异步的，模块使用时才会加载执行。</p>
+<p>CMD规范整合了CommonJS和AMD规范的特点。在 Sea.js 中，所有 JavaScript 模块都遵循 CMD模块定义规范。</p>
+<ul>
+<li><p>CMD规范基本语法</p>
+<p>  <strong>定义暴露模块：</strong></p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义没有依赖的模块</span></span><br><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params">require,exports,module</span>) </span>&#123;</span><br><span class="line">    exports.xxx = value</span><br><span class="line">    <span class="built_in">module</span>.exports = value</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义有依赖的模块</span></span><br><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params">require,exports,module</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 引入依赖模块(同步)</span></span><br><span class="line">    <span class="keyword">var</span> module2 = <span class="built_in">require</span>(<span class="string">'./module2'</span>)</span><br><span class="line">    <span class="comment">// 引入依赖模块(异步)</span></span><br><span class="line">    <span class="built_in">require</span>.async(<span class="string">'./modules3'</span>,<span class="function"><span class="keyword">function</span>(<span class="params">m3</span>) </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125; )</span><br><span class="line">    <span class="comment">// 暴露模块</span></span><br><span class="line">    exports.xxx = value</span><br><span class="line">    </span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>  <strong>引入使用模块：</strong></p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">define(<span class="function"><span class="keyword">function</span>(<span class="params">require</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> m1 = <span class="built_in">require</span>(<span class="string">'./module1'</span>)</span><br><span class="line">    <span class="keyword">var</span> m4 = <span class="built_in">require</span>(<span class="string">'./module1'</span>)    </span><br><span class="line">    m1.show()</span><br><span class="line">    m4.show()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<blockquote>
+<p>ES6模块化</p>
+</blockquote>
+<ul>
+<li><p>ES6模块化语法</p>
+<ul>
+<li><p>export命令用于规定模块的对外接口，import命令用于输入其它模块提供的功能</p>
+</li>
+<li><p>使用import命令的时候，用户需要知道所需加载的变量名或函数名，否则无法加载</p>
+</li>
+<li><p>为了给用户提供方便，让他们不用阅读文档就能加载模块，就要用到export default命- 令，为模块指定默认输出。</p>
+</li>
+<li><p>模块默认输出, 其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。</p>
+</li>
+</ul>
+</li>
+<li><p>ES6模块与CommonJS模块的差异</p>
+<ul>
+<li>CommonJS模块输入的是一个值的拷贝，ES6模块输出的是值的引用<ul>
+<li>ES6模块的运行机制与CommonJS不一样。ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块</li>
+</ul>
+</li>
+<li>CommonJS模块是运行时加载，ES6模块是编译时输出接口<ul>
+<li>CommonJS加载的是一个对象(即module.exports属性)，该对象只有在脚本运行完才会生成。而ES6模块不是对象，它的对外接口知识一个<strong>静态定义</strong>，在代码静态解析阶段就会生成</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#模块化"><span class="nav-number">1.</span> <span class="nav-text">模块化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、模块化的理解"><span class="nav-number">1.1.</span> <span class="nav-text">一、模块化的理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、模块化规范"><span class="nav-number">1.2.</span> <span class="nav-text">二、模块化规范</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">浅陌初心</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">浅陌初心</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+
+	
+
+
